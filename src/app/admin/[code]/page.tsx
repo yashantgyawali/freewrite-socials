@@ -8,7 +8,7 @@ import { getAdminSecret } from "@/lib/identity";
 import { ensureAuth } from "@/lib/supabase/client";
 import { setRound, startRound, setPhase, endRoom } from "@/lib/rpc";
 import { syncServerTime, secondsUntil } from "@/lib/serverTime";
-import { useRoomState, useRoster, useRound } from "@/lib/realtime";
+import { useRoomState, useRoster, useRound, useMatchedCount } from "@/lib/realtime";
 import { PRESETS, type Preset } from "@/lib/presets";
 import type { Constraints, Phase } from "@/lib/types";
 
@@ -16,7 +16,7 @@ type Config = {
   ordinal: number;
   prompt: string;
   durationSecs: number;
-  pairingMode: "solo" | "pairs";
+  pairingMode: "solo" | "pairs" | "tinder";
   writeTarget: "self" | "partner";
   noBackspace: boolean;
   fadeText: boolean;
@@ -24,6 +24,7 @@ type Config = {
   bombSecs: number;
   loseText: boolean;
   revealMode: "private" | "send-to-partner" | "show-on-admin";
+  deckLevels: number[];
 };
 
 function fromPreset(p: Preset, ordinal: number): Config {
@@ -39,6 +40,7 @@ function fromPreset(p: Preset, ordinal: number): Config {
     bombSecs: p.constraints.pauseBomb?.timeoutSecs ?? 5,
     loseText: !!p.constraints.pauseBomb?.loseText,
     revealMode: p.revealMode,
+    deckLevels: p.constraints.deckLevels ?? [1, 2, 3],
   };
 }
 
@@ -48,6 +50,7 @@ function toConstraints(c: Config): Constraints {
   if (c.fadeText) out.fadeText = true;
   if (c.bombEnabled)
     out.pauseBomb = { enabled: true, timeoutSecs: c.bombSecs, loseText: c.loseText };
+  if (c.pairingMode === "tinder") out.deckLevels = c.deckLevels;
   return out;
 }
 
@@ -57,6 +60,7 @@ export default function AdminPage() {
   const room = useRoomState(code);
   const roster = useRoster(room?.id ?? null);
   const round = useRound(room?.current_round_id ?? null);
+  const matchedCount = useMatchedCount(room?.current_round_id ?? null);
 
   const [config, setConfig] = useState<Config | null>(null);
   const [roundId, setRoundId] = useState<string | null>(null);
@@ -68,7 +72,10 @@ export default function AdminPage() {
 
   useEffect(() => {
     ensureAuth().then(() => syncServerTime());
-    setJoinUrl(`${window.location.origin}/?code=${code}`);
+    // Prefer the public deployed URL so the QR is scannable even when the admin
+    // console is opened locally; fall back to wherever this page is served.
+    const base = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+    setJoinUrl(`${base.replace(/\/$/, "")}/?code=${code}`);
   }, [code]);
 
   // Track viewport min-dimension (for a big fullscreen QR) + Esc to close it.
@@ -247,6 +254,14 @@ export default function AdminPage() {
                 Round {round.ordinal} · {round.pairing_mode} · writes about {round.write_target}
               </p>
             )}
+            {room?.phase === "pairing" && round?.pairing_mode === "tinder" && (
+              <p className="mt-2 text-2xl font-bold text-zinc-900">
+                {matchedCount}{" "}
+                <span className="text-sm font-normal text-zinc-400">
+                  of {active.length} matched
+                </span>
+              </p>
+            )}
             {room?.phase === "writing" && room.phase_ends_at && (
               <p className="mt-2 font-mono text-4xl font-bold tabular-nums text-zinc-900">
                 {mm}:{ss}
@@ -372,6 +387,7 @@ export default function AdminPage() {
                   >
                     <option value="solo">solo</option>
                     <option value="pairs">pairs</option>
+                    <option value="tinder">tinder (swipe)</option>
                   </select>
                   <select
                     value={config.writeTarget}
@@ -434,6 +450,32 @@ export default function AdminPage() {
                     </>
                   )}
                 </div>
+                {config.pairingMode === "tinder" && (
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-600">
+                    <span className="text-zinc-400">Deck levels:</span>
+                    {[
+                      { n: 1, label: "1 · Light" },
+                      { n: 2, label: "2 · Real" },
+                      { n: 3, label: "3 · Bold" },
+                    ].map((lvl) => (
+                      <label key={lvl.n} className="flex items-center gap-1">
+                        <input
+                          type="checkbox"
+                          checked={config.deckLevels.includes(lvl.n)}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              deckLevels: e.target.checked
+                                ? [...config.deckLevels, lvl.n].sort()
+                                : config.deckLevels.filter((x) => x !== lvl.n),
+                            })
+                          }
+                        />
+                        {lvl.label}
+                      </label>
+                    ))}
+                  </div>
+                )}
                 <button
                   onClick={saveConfig}
                   className="self-start rounded-lg bg-zinc-100 px-3 py-1.5 text-sm font-medium text-zinc-700"

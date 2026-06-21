@@ -22,9 +22,17 @@ function JoinForm() {
   return (
     <div className="screen flex flex-col items-center justify-center px-8">
       <div className="w-full max-w-sm flex flex-col gap-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">freewrite</h1>
-          <p className="mt-1 text-sm text-zinc-400">Write without thinking too much.</p>
+        <div className="flex flex-col items-center text-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.png"
+            alt="freewrite"
+            className="mb-3 h-16 w-16 rounded-2xl ring-1 ring-zinc-100"
+          />
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">
+            freewrite<span className="text-zinc-300">.socials</span>
+          </h1>
+          <p className="mt-1 text-sm text-zinc-400">Connect with someone, and just write.</p>
         </div>
 
         <div className="flex flex-col gap-3">

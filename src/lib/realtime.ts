@@ -151,6 +151,89 @@ export function useMyPairing(
   return pairing;
 }
 
+// How many participants are currently matched this round (admin view).
+export function useMatchedCount(roundId: string | null): number {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!roundId) {
+      setCount(0);
+      return;
+    }
+    const sb = getSupabase();
+    let active = true;
+    let channel: ReturnType<typeof sb.channel> | null = null;
+    const refetch = async () => {
+      const { count: c } = await sb
+        .from("pairings")
+        .select("*", { count: "exact", head: true })
+        .eq("round_id", roundId)
+        .not("partner_id", "is", null);
+      if (active) setCount(c ?? 0);
+    };
+    (async () => {
+      await ensureAuth();
+      await refetch();
+      channel = sb
+        .channel(`matched:${roundId}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "pairings", filter: `round_id=eq.${roundId}` },
+          () => refetch(),
+        )
+        .subscribe();
+    })();
+    return () => {
+      active = false;
+      if (channel) sb.removeChannel(channel);
+    };
+  }, [roundId]);
+  return count;
+}
+
+// A specific author's submission this round — used for the tinder "swap & read
+// each other's" reveal, where you read what your partner wrote.
+export function useSubmissionByAuthor(
+  roundId: string | null,
+  authorId: string | null | undefined,
+): { content: string; lost: boolean } | null {
+  const [sub, setSub] = useState<{ content: string; lost: boolean } | null>(null);
+  useEffect(() => {
+    if (!roundId || !authorId) {
+      setSub(null);
+      return;
+    }
+    const sb = getSupabase();
+    let active = true;
+    let channel: ReturnType<typeof sb.channel> | null = null;
+    const refetch = async () => {
+      const { data } = await sb
+        .from("submissions")
+        .select("content, lost")
+        .eq("round_id", roundId)
+        .eq("author_id", authorId)
+        .maybeSingle();
+      if (active) setSub((data as { content: string; lost: boolean }) ?? null);
+    };
+    (async () => {
+      await ensureAuth();
+      await refetch();
+      channel = sb
+        .channel(`authorsub:${roundId}:${authorId}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "submissions", filter: `round_id=eq.${roundId}` },
+          () => refetch(),
+        )
+        .subscribe();
+    })();
+    return () => {
+      active = false;
+      if (channel) sb.removeChannel(channel);
+    };
+  }, [roundId, authorId]);
+  return sub;
+}
+
 // The piece written ABOUT me this round (reveal). Author name resolved by caller.
 export function useRevealForMe(
   roundId: string | null,

@@ -8,8 +8,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Freewrite",
-  description: "A live freewriting workshop — write without thinking too much.",
+  title: "freewrite.socials",
+  description: "Connect with someone, and just write.",
 };
 
 export const viewport: Viewport = {

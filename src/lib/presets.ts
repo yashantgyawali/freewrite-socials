@@ -14,6 +14,16 @@ export interface Preset {
 // The planned workshop arc. All editable live before each round starts.
 export const PRESETS: Preset[] = [
   {
+    name: "Ganthan match",
+    blurb: "Swipe · match on a card · write & swap",
+    prompt: "",
+    durationSecs: 300,
+    pairingMode: "tinder",
+    writeTarget: "self",
+    constraints: { deckLevels: [1, 2, 3] },
+    revealMode: "send-to-partner",
+  },
+  {
     name: "Warm-up",
     blurb: "Solo · just write",
     prompt: "Write whatever is on your mind. Don't stop, don't edit, don't judge.",

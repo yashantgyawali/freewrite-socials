@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import type { Participant, Pairing, Round, RoomState } from "@/lib/types";
 import WritingSurface from "@/components/writing/WritingSurface";
+import SwipeDeck from "@/components/participant/SwipeDeck";
+import { getPromptText } from "@/lib/prompts";
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
@@ -19,6 +21,7 @@ export default function PhaseView({
   roster,
   pairing,
   reveal,
+  partnerSubmission,
 }: {
   room: RoomState;
   round: Round | null;
@@ -26,6 +29,7 @@ export default function PhaseView({
   roster: Participant[];
   pairing: Pairing | null;
   reveal: { author_id: string; content: string; lost: boolean } | null;
+  partnerSubmission: { content: string; lost: boolean } | null;
 }) {
   const nameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -34,6 +38,8 @@ export default function PhaseView({
   }, [roster]);
 
   const partnerName = pairing?.partner_id ? nameById.get(pairing.partner_id) : null;
+  const isTinder = round?.pairing_mode === "tinder";
+  const cardText = getPromptText(pairing?.card_id);
 
   if (room.status === "ended") {
     return (
@@ -56,6 +62,26 @@ export default function PhaseView({
       );
 
     case "pairing":
+      if (isTinder && round) {
+        // Not matched yet → keep swiping. Matched → show partner + the card.
+        if (!pairing) return <SwipeDeck roundId={round.id} levels={round.constraints.deckLevels} />;
+        return (
+          <Centered>
+            <div className="text-5xl">🤝</div>
+            <p className="text-sm text-zinc-400">You matched with</p>
+            <p className="text-3xl font-semibold text-zinc-900">{partnerName ?? "your partner"}</p>
+            {cardText && (
+              <div className="mt-2 rounded-2xl bg-zinc-100 px-5 py-4">
+                <p className="text-xs uppercase tracking-wide text-zinc-400">Talk about</p>
+                <p className="mt-1 text-lg leading-snug text-zinc-800">{cardText}</p>
+              </div>
+            )}
+            <p className="mt-2 max-w-xs text-sm text-zinc-400">
+              Find each other and talk it through. You&apos;ll write next.
+            </p>
+          </Centered>
+        );
+      }
       return (
         <Centered>
           {round?.pairing_mode === "pairs" && partnerName ? (
@@ -84,8 +110,10 @@ export default function PhaseView({
               with <span className="font-semibold text-zinc-800">{partnerName}</span>
             </p>
           )}
-          {round?.prompt && (
-            <p className="max-w-md text-xl leading-relaxed text-zinc-800">{round.prompt}</p>
+          {(cardText || round?.prompt) && (
+            <p className="max-w-md text-xl leading-relaxed text-zinc-800">
+              {cardText || round?.prompt}
+            </p>
           )}
         </Centered>
       );
@@ -98,6 +126,7 @@ export default function PhaseView({
           round={round}
           deadline={room.phase_ends_at}
           onFinalized={() => {}}
+          promptText={isTinder ? cardText : undefined}
         />
       );
 
@@ -111,6 +140,24 @@ export default function PhaseView({
       );
 
     case "reveal": {
+      // Tinder: you each wrote your own piece on the shared card — now swap.
+      if (isTinder) {
+        return (
+          <div className="screen flex flex-col px-7 py-10">
+            <p className="text-sm text-zinc-400">
+              What <span className="font-medium text-zinc-700">{partnerName ?? "your partner"}</span> wrote
+            </p>
+            {cardText && <p className="mt-1 text-xs text-zinc-300">on “{cardText}”</p>}
+            <div className="mt-5 flex-1 overflow-y-auto whitespace-pre-wrap text-lg leading-relaxed text-zinc-900">
+              {partnerSubmission
+                ? partnerSubmission.lost
+                  ? "💨 …their words were lost."
+                  : partnerSubmission.content || "(nothing)"
+                : "Waiting for their words…"}
+            </div>
+          </div>
+        );
+      }
       if (round?.write_target === "partner") {
         if (reveal) {
           const author = nameById.get(reveal.author_id) ?? "Someone";

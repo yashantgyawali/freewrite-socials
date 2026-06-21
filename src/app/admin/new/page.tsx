@@ -25,6 +25,8 @@ export default function NewRoomPage() {
 
   return (
     <div className="screen flex flex-col items-center justify-center gap-6 px-8 text-center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logo.png" alt="freewrite" className="h-14 w-14 rounded-2xl ring-1 ring-zinc-100" />
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Host a freewrite</h1>
         <p className="mt-1 text-sm text-zinc-400">

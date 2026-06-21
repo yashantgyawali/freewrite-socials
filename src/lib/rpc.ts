@@ -94,6 +94,21 @@ export function markOut(roundId: string) {
   return call("mark_out", { p_round_id: roundId, p_client_id: getClientId() });
 }
 
+export type SwipeResult = {
+  matched: boolean;
+  card_id?: string;
+  count?: number;
+  auto?: boolean;
+};
+export function swipe(roundId: string, cardId: string, liked: boolean) {
+  return call<SwipeResult>("swipe", {
+    p_round_id: roundId,
+    p_client_id: getClientId(),
+    p_card_id: cardId,
+    p_liked: liked,
+  });
+}
+
 export type AdminSubmission = {
   author_name: string;
   subject_name: string | null;

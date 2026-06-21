@@ -6,7 +6,7 @@ export type Phase =
   | "submitted"
   | "reveal";
 
-export type PairingMode = "solo" | "pairs";
+export type PairingMode = "solo" | "pairs" | "tinder";
 export type WriteTarget = "self" | "partner";
 export type RevealMode = "private" | "send-to-partner" | "show-on-admin";
 
@@ -20,6 +20,7 @@ export interface Constraints {
   noBackspace?: boolean;
   fadeText?: boolean;
   pauseBomb?: PauseBomb;
+  deckLevels?: number[]; // tinder: which prompt levels are in the swipe deck
 }
 
 export interface RoomState {
@@ -58,4 +59,5 @@ export interface Pairing {
   participant_id: string;
   partner_id: string | null;
   group_id: number | null;
+  card_id: string | null;
 }

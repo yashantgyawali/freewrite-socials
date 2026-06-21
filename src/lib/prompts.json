@@ -1,0 +1,706 @@
+{
+  "prompts": [
+    {
+      "id": "L1-1",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "You spot someone you know at New Road and you're not in the mood to talk. What's your move?"
+    },
+    {
+      "id": "L1-2",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "How many unread messages do you have right now — and which app are you most avoiding?"
+    },
+    {
+      "id": "L1-3",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "You accidentally send a message to the wrong person. Walk us through your next 30 seconds."
+    },
+    {
+      "id": "L1-4",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "What's something you do on autopilot that you only noticed when someone pointed it out?"
+    },
+    {
+      "id": "L1-5",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "Are you someone who's early, exactly on time, or always has a reason for being late?"
+    },
+    {
+      "id": "L1-6",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "What's your strategy when someone you don't want to lend money to asks you for it?"
+    },
+    {
+      "id": "L1-7",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Nepali Life & Culture",
+      "text": "What's the one thing your mom has said in front of your friends that made you want to disappear?"
+    },
+    {
+      "id": "L1-8",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "What does your ideal do-nothing day actually look like?"
+    },
+    {
+      "id": "L1-9",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "Which one are you after a night out — first to fall asleep, last one standing, or the one creating chaos?"
+    },
+    {
+      "id": "L1-10",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "What's a topic you know way too much about for no real reason?"
+    },
+    {
+      "id": "L1-11",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "What's the fastest you've ever gotten ready to go out — and where were you going that made it worth it?"
+    },
+    {
+      "id": "L1-12",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "What do you do when someone is clearly telling a story wrong — and the story is about you?"
+    },
+    {
+      "id": "L1-13",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Nepali Life & Culture",
+      "text": "What's the most Nepali jugaad solution you've pulled off when something broke at home?"
+    },
+    {
+      "id": "L1-14",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Nepali Life & Culture",
+      "text": "When a relative asks 'Ke gardai chau ajhkal?' — what do you actually say vs what you want to say?"
+    },
+    {
+      "id": "L1-15",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Nepali Life & Culture",
+      "text": "You're watching a movie with your parents and an unexpected kissing scene comes on. Describe the next 10 seconds."
+    },
+    {
+      "id": "L1-16",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Food & Recommendations",
+      "text": "What's one café or restaurant in your city you'd recommend to everyone in this room right now?"
+    },
+    {
+      "id": "L1-17",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Nepali Life & Culture",
+      "text": "What's the most Nepali thing you do that you'd struggle to explain to a foreigner?"
+    },
+    {
+      "id": "L1-18",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Nepali Life & Culture",
+      "text": "If you had to survive a 6-hour load shedding with no phone — what would you actually do?"
+    },
+    {
+      "id": "L1-19",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Nepali Life & Culture",
+      "text": "Your dad asks you to explain something on his phone. How many minutes before you lose patience?"
+    },
+    {
+      "id": "L1-20",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "You're in a lift with someone you vaguely know. It's 6 floors. What do you do?"
+    },
+    {
+      "id": "L1-21",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "What's the one app on your phone you'd be most embarrassed about if someone scrolled through it?"
+    },
+    {
+      "id": "L1-22",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "Be honest — are you actually listening when someone talks or are you just waiting for your turn?"
+    },
+    {
+      "id": "L1-23",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "What's your move when a waiter gets your order completely wrong but you don't want to make it awkward?"
+    },
+    {
+      "id": "L1-24",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "What's the one notification sound that immediately stresses you out?"
+    },
+    {
+      "id": "L1-25",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "You show up to plans and the vibe is completely not what you expected. Do you stay and adjust or start planning your exit?"
+    },
+    {
+      "id": "L1-26",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Everyday Habits",
+      "text": "What's the most 'I deserve this' purchase you've made recently?"
+    },
+    {
+      "id": "L1-27",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "You're introduced to someone and immediately forget their name. What do you do for the rest of the conversation?"
+    },
+    {
+      "id": "L1-28",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "Someone hands you something homemade to try and it's not good. What do you do?"
+    },
+    {
+      "id": "L1-29",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "Someone confidently mispronounces something the entire conversation. Do you correct them or let it go?"
+    },
+    {
+      "id": "L1-30",
+      "level": 1,
+      "levelName": "Light & Fun",
+      "category": "Social Situations",
+      "text": "You're at a wedding and you don't know anyone. What's your opening move?"
+    },
+    {
+      "id": "L2-1",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Identity & Society",
+      "text": "What's a Nepali tradition you respect but wouldn't personally carry forward?"
+    },
+    {
+      "id": "L2-2",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Identity & Society",
+      "text": "What's something the older generation in Nepal gets completely right that your generation refuses to admit?"
+    },
+    {
+      "id": "L2-3",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Identity & Society",
+      "text": "What's a 'success' that Nepali society celebrates that you personally find hollow?"
+    },
+    {
+      "id": "L2-4",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Personal Habits & Patterns",
+      "text": "What's your biggest time-wasting habit and have you actually tried to fix it?"
+    },
+    {
+      "id": "L2-5",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Personal Habits & Patterns",
+      "text": "Are you someone who makes decisions quickly and moves on, or someone who replays them for weeks?"
+    },
+    {
+      "id": "L2-6",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Friendship & Relationships",
+      "text": "What's your honest approach when a friend is going through something hard — fixer, listener, or distractor?"
+    },
+    {
+      "id": "L2-7",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Self-Awareness",
+      "text": "What's something you wish people understood about you without you having to explain it every time?"
+    },
+    {
+      "id": "L2-8",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Friendship & Relationships",
+      "text": "Are you the person your friends call at 2am — and do you actually want to be?"
+    },
+    {
+      "id": "L2-9",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Money & Ambition",
+      "text": "What's your actual relationship with money — spender, saver, or someone who avoids thinking about it entirely?"
+    },
+    {
+      "id": "L2-10",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Identity & Society",
+      "text": "What's something about Nepal that makes you angry but also makes you stay?"
+    },
+    {
+      "id": "L2-11",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Identity & Society",
+      "text": "Do you see yourself in Nepal five years from now — and how do you feel about that answer?"
+    },
+    {
+      "id": "L2-12",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Personal Habits & Patterns",
+      "text": "What's the most out-of-character thing you've ever done — and what pushed you to do it?"
+    },
+    {
+      "id": "L2-13",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Personal Habits & Patterns",
+      "text": "What's something small that genuinely makes your day better every time without fail?"
+    },
+    {
+      "id": "L2-14",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Friendship & Relationships",
+      "text": "What's something a stranger did or said that stuck with you longer than it should have?"
+    },
+    {
+      "id": "L2-15",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Self-Awareness",
+      "text": "What's something in someone else that you're secretly a little jealous of?"
+    },
+    {
+      "id": "L2-16",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Life & Culture",
+      "text": "What's a habit your parents have that you swore you'd never do — but now catch yourself doing?"
+    },
+    {
+      "id": "L2-17",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Personal Habits & Patterns",
+      "text": "Be honest — when was the last time you cleaned your room and what finally pushed you to do it?"
+    },
+    {
+      "id": "L2-18",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Life & Culture",
+      "text": "What's something you do every Dashain that you secretly find exhausting but would never admit?"
+    },
+    {
+      "id": "L2-19",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Life & Culture",
+      "text": "What's something your parents brag about you to relatives that makes you cringe every time?"
+    },
+    {
+      "id": "L2-20",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Life & Culture",
+      "text": "What's the one auntie or uncle comment that has lived rent-free in your head?"
+    },
+    {
+      "id": "L2-21",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Self-Awareness",
+      "text": "What's one thing you've done in the last year that your younger self would be surprised by?"
+    },
+    {
+      "id": "L2-22",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Honest Moments",
+      "text": "What's the most uncomfortable conversation you've overheard?"
+    },
+    {
+      "id": "L2-23",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Honest Moments",
+      "text": "Be honest — when did you last do something purely for yourself with zero guilt?"
+    },
+    {
+      "id": "L2-24",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Honest Moments",
+      "text": "Be honest — are you the same person at home as you are in front of people?"
+    },
+    {
+      "id": "L2-25",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Honest Moments",
+      "text": "What's the most honest thing someone has ever said to your face?"
+    },
+    {
+      "id": "L2-26",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Nepali Identity & Society",
+      "text": "What's one thing about your city that you'd fix first if you actually had the power to?"
+    },
+    {
+      "id": "L2-27",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Money & Ambition",
+      "text": "What's something about money you wish someone had told you earlier?"
+    },
+    {
+      "id": "L2-28",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Honest Moments",
+      "text": "Have you ever pretended to agree with someone just to avoid a longer conversation?"
+    },
+    {
+      "id": "L2-29",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Honest Moments",
+      "text": "When someone asks how you are, how often do you actually tell the truth?"
+    },
+    {
+      "id": "L2-30",
+      "level": 2,
+      "levelName": "Getting Real",
+      "category": "Personal Habits & Patterns",
+      "text": "What's a habit you have that people who know you well would immediately recognize as yours?"
+    },
+    {
+      "id": "L3-1",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Honest Self-Reflection",
+      "text": "What's a compliment you've received that you still don't fully believe about yourself?"
+    },
+    {
+      "id": "L3-2",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Difficult but Real",
+      "text": "Have you ever ended a friendship? What happened?"
+    },
+    {
+      "id": "L3-3",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Honest Self-Reflection",
+      "text": "What emotion do you find hardest to express?"
+    },
+    {
+      "id": "L3-4",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Difficult but Real",
+      "text": "When's the angriest you've ever been at someone you love?"
+    },
+    {
+      "id": "L3-5",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Bold Confessions",
+      "text": "What's something you've never admitted to your parents that would genuinely change how they see you?"
+    },
+    {
+      "id": "L3-6",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Relationships & Love",
+      "text": "Have you ever liked someone your family would never approve of and what did you do about it?"
+    },
+    {
+      "id": "L3-7",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Difficult but Real",
+      "text": "What's the most honest thing you've ever said to someone that changed everything between you?"
+    },
+    {
+      "id": "L3-8",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Bold Confessions",
+      "text": "What's something you've done that completely contradicts the image people have of you?"
+    },
+    {
+      "id": "L3-9",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Relationships & Love",
+      "text": "What's the boldest thing you've ever done for someone you liked?"
+    },
+    {
+      "id": "L3-10",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Honest Self-Reflection",
+      "text": "What's a boundary you've set that people in your life still don't fully respect?"
+    },
+    {
+      "id": "L3-11",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Difficult but Real",
+      "text": "What's the most uncomfortable truth you've had to tell someone you care about?"
+    },
+    {
+      "id": "L3-12",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Honest Self-Reflection",
+      "text": "What's the one thing standing between you and the life you actually want?"
+    },
+    {
+      "id": "L3-13",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Warmth & Joy",
+      "text": "What's the most unexpected thing that has made you genuinely happy recently?"
+    },
+    {
+      "id": "L3-14",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Warmth & Joy",
+      "text": "What's the most spontaneous decision you've ever made and how did it turn out?"
+    },
+    {
+      "id": "L3-15",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Relationships & Love",
+      "text": "Have you ever surprised yourself by how strongly you felt about something or someone?"
+    },
+    {
+      "id": "L3-16",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Warmth & Joy",
+      "text": "What's a moment where someone completely restored your faith in people?"
+    },
+    {
+      "id": "L3-17",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Bold Confessions",
+      "text": "What's something you've held onto for too long — an object, a feeling, or a person?"
+    },
+    {
+      "id": "L3-18",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Warmth & Joy",
+      "text": "What's a moment you wish you could relive — not to change it, just to feel it again?"
+    },
+    {
+      "id": "L3-19",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Relationships & Love",
+      "text": "What's a relationship in your life that looks small from the outside but means everything to you?"
+    },
+    {
+      "id": "L3-20",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Warmth & Joy",
+      "text": "Have you ever felt like you were exactly where you were supposed to be — when and where was it?"
+    },
+    {
+      "id": "L3-21",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Honest Self-Reflection",
+      "text": "What's something you do that you know is irrational but brings you genuine comfort?"
+    },
+    {
+      "id": "L3-22",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Honest Self-Reflection",
+      "text": "What's a side of you that comes out only around certain people?"
+    },
+    {
+      "id": "L3-23",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Honest Self-Reflection",
+      "text": "What's the most grown-up decision you've ever made?"
+    },
+    {
+      "id": "L3-24",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Bold Confessions",
+      "text": "What's something you've wanted to say to someone in this room since the game started?"
+    },
+    {
+      "id": "L3-25",
+      "level": 3,
+      "levelName": "Bold & Honest",
+      "category": "Warmth & Joy",
+      "text": "What's something you've said to someone that you hope they still remember?"
+    }
+  ],
+  "actions": [
+    {
+      "id": "A-1",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Everyone writes down one genuine compliment for the person on their left and reads it out loud."
+    },
+    {
+      "id": "A-2",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Everyone has to say one thing they genuinely admire about the person who just answered the last question."
+    },
+    {
+      "id": "A-3",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Each person shares a unique skill they have that nobody in the room knows about — the group votes on whose is most surprising."
+    },
+    {
+      "id": "A-4",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Each person draws a self-portrait in 30 seconds and the group guesses whose is whose."
+    },
+    {
+      "id": "A-5",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Everyone votes on who in the group would be the best politician in Nepal — and who would be the worst. Explain both."
+    },
+    {
+      "id": "A-6",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Go around the group — each person has to say one assumption they made about someone in the room when they first met them tonight."
+    },
+    {
+      "id": "A-7",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Everyone closes their eyes. The group has to guess without looking — who in the room laughs the loudest? Who goes quiet when they're uncomfortable? Everyone reveals their answer at the same time."
+    },
+    {
+      "id": "A-8",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Everyone stands up and swaps seats based on who the group thinks has the most similar energy to each other."
+    },
+    {
+      "id": "A-9",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "The group takes a vote — who had the most surprising answer tonight? That person gets to skip the next question card if they want."
+    },
+    {
+      "id": "A-10",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Do Now",
+      "text": "Everyone simultaneously points to the person in the room they'd most want on their side in an argument."
+    },
+    {
+      "id": "A-1",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Plan Later",
+      "text": "The group agrees to come back and play Ganthan again within a month — but this time each person has to bring someone new. Agree on the date before this card goes down."
+    },
+    {
+      "id": "A-2",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Plan Later",
+      "text": "Each person commits to doing one kind thing for a stranger this week. Report back in 7 days."
+    },
+    {
+      "id": "A-3",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Plan Later",
+      "text": "The group adopts one rule to live by for the next week — agree on what it is before this card goes down. Report back in 7 days."
+    },
+    {
+      "id": "A-4",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Plan Later",
+      "text": "Everyone in the group has to try something the person on their left recommended tonight — report back in the group chat within a week."
+    },
+    {
+      "id": "A-5",
+      "level": 0,
+      "levelName": "Do Something",
+      "category": "Plan Later",
+      "text": "The group plans one meal together at a restaurant — decide the place and date before this card goes down. One person is in charge of making the reservation."
+    }
+  ]
+}

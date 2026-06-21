@@ -5,7 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { getClientId, getDisplayName } from "@/lib/identity";
 import { joinRoom } from "@/lib/rpc";
 import { syncServerTime } from "@/lib/serverTime";
-import { useRoomState, useRound, useRoster, useMyPairing, useRevealForMe } from "@/lib/realtime";
+import {
+  useRoomState,
+  useRound,
+  useRoster,
+  useMyPairing,
+  useRevealForMe,
+  useSubmissionByAuthor,
+} from "@/lib/realtime";
 import PhaseView from "@/components/participant/PhaseView";
 
 export default function RoomPage() {
@@ -19,6 +26,10 @@ export default function RoomPage() {
   const roster = useRoster(room?.id ?? null);
   const pairing = useMyPairing(room?.current_round_id ?? null, participantId);
   const reveal = useRevealForMe(room?.current_round_id ?? null, participantId);
+  const partnerSubmission = useSubmissionByAuthor(
+    room?.current_round_id ?? null,
+    pairing?.partner_id ?? null,
+  );
 
   // Join (idempotent) so a reload re-attaches to the same participant row.
   useEffect(() => {
@@ -86,6 +97,7 @@ export default function RoomPage() {
       roster={roster}
       pairing={pairing}
       reveal={reveal}
+      partnerSubmission={partnerSubmission}
     />
   );
 }

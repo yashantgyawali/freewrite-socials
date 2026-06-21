@@ -11,11 +11,14 @@ export default function WritingSurface({
   round,
   deadline,
   onFinalized,
+  promptText,
 }: {
   round: Round;
   deadline: string | null;
   onFinalized: () => void;
+  promptText?: string;
 }) {
+  const prompt = promptText || round.prompt;
   const fade = !!round.constraints.fadeText;
   const noBackspace = fade || !!round.constraints.noBackspace;
   const bomb = round.constraints.pauseBomb;
@@ -127,7 +130,7 @@ export default function WritingSurface({
   return (
     <div className="screen flex flex-col">
       <header className="px-5 pt-3 pb-2 flex items-start justify-between gap-4">
-        <p className="text-sm leading-snug text-zinc-500 max-w-[80%]">{round.prompt}</p>
+        <p className="text-sm leading-snug text-zinc-500 max-w-[80%]">{prompt}</p>
         {deadline && (
           <span
             className={`shrink-0 tabular-nums text-sm font-medium ${
