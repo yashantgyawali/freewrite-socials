@@ -20,6 +20,10 @@ export function getPromptText(id: string | null | undefined): string {
   return getPrompt(id)?.text ?? "";
 }
 
+// Cards are shown in shared batches of this size so everyone swipes the same
+// questions (which is what makes mutual matches actually happen).
+export const BATCH_SIZE = 12;
+
 // A shuffled deck for swiping, optionally restricted to certain levels.
 export function buildDeck(levels?: number[]): Prompt[] {
   const list =
@@ -29,4 +33,18 @@ export function buildDeck(levels?: number[]): Prompt[] {
     [list[i], list[j]] = [list[j], list[i]];
   }
   return list;
+}
+
+// The shared, fixed card order for a tinder round — generated once (by the
+// admin) and stored on the round so every phone presents identical batches.
+export function buildDeckOrder(levels?: number[]): string[] {
+  return buildDeck(levels).map((p) => p.id);
+}
+
+// Resolve a stored order (or a fallback level filter) into Prompt cards.
+export function promptsFromOrder(order?: string[], levels?: number[]): Prompt[] {
+  if (order && order.length) {
+    return order.map((id) => getPrompt(id)).filter((p): p is Prompt => !!p);
+  }
+  return buildDeck(levels);
 }

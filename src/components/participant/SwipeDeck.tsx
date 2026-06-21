@@ -1,34 +1,45 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { buildDeck } from "@/lib/prompts";
+import { promptsFromOrder, BATCH_SIZE } from "@/lib/prompts";
 import { swipe } from "@/lib/rpc";
 
+// Pass too many in a row and you're forced to say yes to the next one.
+const PASS_LIMIT = 10;
+
 // Tinder-style prompt deck. Right = "I'd talk about this", left = pass.
-// A mutual right-swipe on the same card pairs you (handled server-side); the
-// parent swaps this out for the matched view once the pairing arrives.
+// Cards come in a shared, fixed order (same batches of 12 for everyone) so
+// mutual right-swipes on the same card actually happen. A mutual match pairs
+// you server-side; the parent swaps this out for the matched view.
 export default function SwipeDeck({
   roundId,
+  order,
   levels,
 }: {
   roundId: string;
+  order?: string[];
   levels?: number[];
 }) {
-  // Build once on mount — never reshuffle (the `levels` prop is a fresh array
-  // reference on every realtime round update, which would otherwise reshuffle
-  // the deck under the user mid-swipe).
-  const [deck] = useState(() => buildDeck(levels));
+  // Built once on mount — never reshuffle under the user.
+  const [deck] = useState(() => promptsFromOrder(order, levels));
   const [index, setIndex] = useState(0);
   const [dragX, setDragX] = useState(0);
   const [exiting, setExiting] = useState<null | "left" | "right">(null);
   const [busy, setBusy] = useState(false);
   const [matched, setMatched] = useState(false);
+  const [batchBreak, setBatchBreak] = useState(false);
+  const [noStreak, setNoStreak] = useState(0);
   const startX = useRef<number | null>(null);
 
   const card = deck[index];
+  const batch = Math.floor(index / BATCH_SIZE) + 1;
+  const posInBatch = (index % BATCH_SIZE) + 1;
+  const forced = noStreak >= PASS_LIMIT; // must say yes
+  const heartsLeft = Math.max(0, PASS_LIMIT - noStreak);
 
   const commit = async (liked: boolean) => {
     if (busy || matched || !card) return;
+    if (forced && !liked) return; // out of hearts — can't pass
     setBusy(true);
     setExiting(liked ? "right" : "left");
     try {
@@ -41,10 +52,15 @@ export default function SwipeDeck({
       /* ignore; let them retry */
     }
     setTimeout(() => {
-      setIndex((i) => i + 1);
+      const next = index + 1;
+      setIndex(next);
       setDragX(0);
       setExiting(null);
       setBusy(false);
+      // a no costs a heart; a yes refills one (not all)
+      setNoStreak((s) => (liked ? Math.max(0, s - 1) : Math.min(PASS_LIMIT, s + 1)));
+      // crossed a batch boundary with no match → pause for the next 12
+      if (next < deck.length && next % BATCH_SIZE === 0) setBatchBreak(true);
     }, 220);
   };
 
@@ -61,8 +77,13 @@ export default function SwipeDeck({
     if (startX.current == null) return;
     const dx = dragX;
     startX.current = null;
-    if (Math.abs(dx) > 90) commit(dx > 0);
-    else setDragX(0);
+    if (Math.abs(dx) > 90) {
+      if (forced && dx < 0) {
+        setDragX(0); // out of hearts — left swipe snaps back
+        return;
+      }
+      commit(dx > 0);
+    } else setDragX(0);
   };
 
   if (matched) {
@@ -71,6 +92,24 @@ export default function SwipeDeck({
         <div className="text-5xl">✨</div>
         <p className="text-lg font-medium text-zinc-800">It&apos;s a match!</p>
         <p className="text-sm text-zinc-400">Finding your partner…</p>
+      </div>
+    );
+  }
+
+  if (batchBreak) {
+    return (
+      <div className="screen flex flex-col items-center justify-center gap-4 px-8 text-center">
+        <div className="text-4xl">🔄</div>
+        <p className="text-lg font-medium text-zinc-800">No match yet</p>
+        <p className="max-w-xs text-sm text-zinc-400">
+          Here come 12 fresh questions. Find one you&apos;d both love to get into.
+        </p>
+        <button
+          onClick={() => setBatchBreak(false)}
+          className="mt-2 rounded-xl bg-zinc-900 px-6 py-3 font-medium text-white"
+        >
+          Next 12 →
+        </button>
       </div>
     );
   }
@@ -99,6 +138,24 @@ export default function SwipeDeck({
         <p className="mt-1 text-sm text-zinc-400">
           Swipe right on a question you&apos;d love to talk about.
         </p>
+        <p className="mt-2 text-xs text-zinc-300">
+          Batch {batch} · {posInBatch}/{BATCH_SIZE}
+        </p>
+        <div
+          className="mt-2 flex items-center justify-center gap-1"
+          aria-label={`${heartsLeft} passes left`}
+        >
+          {Array.from({ length: PASS_LIMIT }).map((_, i) => (
+            <span key={i} className={`text-sm ${i < heartsLeft ? "text-rose-400" : "text-zinc-200"}`}>
+              ♥
+            </span>
+          ))}
+        </div>
+        {forced && (
+          <p className="mt-1 text-xs font-medium text-rose-500">
+            Out of hearts — say yes to this one 💛
+          </p>
+        )}
       </header>
 
       <div className="relative flex flex-1 items-center justify-center px-6">
@@ -145,8 +202,8 @@ export default function SwipeDeck({
         <button
           aria-label="pass"
           onClick={() => commit(false)}
-          disabled={busy}
-          className="flex h-16 w-16 items-center justify-center rounded-full border border-zinc-200 text-2xl text-rose-500 disabled:opacity-40"
+          disabled={busy || forced}
+          className="flex h-16 w-16 items-center justify-center rounded-full border border-zinc-200 text-2xl text-rose-500 disabled:opacity-20"
         >
           ✗
         </button>

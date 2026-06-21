@@ -94,6 +94,22 @@ export function markOut(roundId: string) {
   return call("mark_out", { p_round_id: roundId, p_client_id: getClientId() });
 }
 
+export function requestPresent(roundId: string) {
+  return call("request_present", { p_round_id: roundId, p_client_id: getClientId() });
+}
+
+export function presentSubmission(
+  roomId: string,
+  adminSecret: string,
+  submissionId: string | null,
+) {
+  return call("present_submission", {
+    p_room_id: roomId,
+    p_admin_secret: adminSecret,
+    p_submission_id: submissionId,
+  });
+}
+
 export type SwipeResult = {
   matched: boolean;
   card_id?: string;

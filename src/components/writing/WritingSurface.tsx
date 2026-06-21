@@ -129,7 +129,7 @@ export default function WritingSurface({
 
   return (
     <div className="screen flex flex-col">
-      <header className="px-5 pt-3 pb-2 flex items-start justify-between gap-4">
+      <header className="px-7 pt-3 pb-2 flex items-start justify-between gap-4">
         <p className="text-sm leading-snug text-zinc-500 max-w-[80%]">{prompt}</p>
         {deadline && (
           <span
@@ -148,7 +148,7 @@ export default function WritingSurface({
         <PlainField noBackspace={noBackspace} disabled={out} onBuffer={onBuffer} />
       )}
 
-      <footer className="px-5 py-3">
+      <footer className="px-7 py-3">
         <button
           onClick={finalize}
           className="text-xs text-zinc-400 underline underline-offset-2"
@@ -187,7 +187,7 @@ function PlainField({
       autoCapitalize="sentences"
       spellCheck={false}
       placeholder="Start writing…"
-      className="flex-1 w-full resize-none bg-transparent px-5 py-2 text-lg leading-relaxed text-zinc-900 outline-none placeholder:text-zinc-300"
+      className="flex-1 w-full resize-none bg-transparent px-7 py-2 text-lg leading-relaxed text-zinc-900 outline-none placeholder:text-zinc-300"
       style={noBackspace ? { userSelect: "none", WebkitUserSelect: "none" } : undefined}
       onChange={(e) => {
         let next = e.target.value;

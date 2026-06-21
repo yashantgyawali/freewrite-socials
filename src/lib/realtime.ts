@@ -151,6 +151,78 @@ export function useMyPairing(
   return pairing;
 }
 
+export interface PresentItem {
+  id: string;
+  author_id: string;
+  content: string;
+}
+
+// Submissions whose author asked to present them (admin view).
+export function usePresentRequests(roundId: string | null): PresentItem[] {
+  const [items, setItems] = useState<PresentItem[]>([]);
+  useEffect(() => {
+    if (!roundId) {
+      setItems([]);
+      return;
+    }
+    const sb = getSupabase();
+    let active = true;
+    let channel: ReturnType<typeof sb.channel> | null = null;
+    const refetch = async () => {
+      const { data } = await sb
+        .from("submissions")
+        .select("id, author_id, content")
+        .eq("round_id", roundId)
+        .eq("present_requested", true)
+        .order("updated_at");
+      if (active && data) setItems(data as PresentItem[]);
+    };
+    (async () => {
+      await ensureAuth();
+      await refetch();
+      channel = sb
+        .channel(`present:${roundId}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "submissions", filter: `round_id=eq.${roundId}` },
+          () => refetch(),
+        )
+        .subscribe();
+    })();
+    return () => {
+      active = false;
+      if (channel) sb.removeChannel(channel);
+    };
+  }, [roundId]);
+  return items;
+}
+
+// A single submission by id — for the live "now presenting" panel.
+export function useSubmissionById(submissionId: string | null): PresentItem | null {
+  const [sub, setSub] = useState<PresentItem | null>(null);
+  useEffect(() => {
+    if (!submissionId) {
+      setSub(null);
+      return;
+    }
+    const sb = getSupabase();
+    let active = true;
+    (async () => {
+      await ensureAuth();
+      const { data } = await sb
+        .from("submissions")
+        .select("id, author_id, content")
+        .eq("id", submissionId)
+        .maybeSingle();
+      if (active) setSub((data as PresentItem) ?? null);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [submissionId]);
+  return sub;
+}
+
 // How many participants are currently matched this round (admin view).
 export function useMatchedCount(roundId: string | null): number {
   const [count, setCount] = useState(0);

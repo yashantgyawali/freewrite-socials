@@ -21,6 +21,7 @@ export interface Constraints {
   fadeText?: boolean;
   pauseBomb?: PauseBomb;
   deckLevels?: number[]; // tinder: which prompt levels are in the swipe deck
+  deckOrder?: string[]; // tinder: shared, fixed card order so everyone sees the same batches
 }
 
 export interface RoomState {
@@ -30,6 +31,7 @@ export interface RoomState {
   current_round_id: string | null;
   phase: Phase;
   phase_ends_at: string | null;
+  presenting_submission_id: string | null;
 }
 
 export interface Round {

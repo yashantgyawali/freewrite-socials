@@ -1,10 +1,45 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Participant, Pairing, Round, RoomState } from "@/lib/types";
 import WritingSurface from "@/components/writing/WritingSurface";
 import SwipeDeck from "@/components/participant/SwipeDeck";
 import { getPromptText } from "@/lib/prompts";
+import { requestPresent } from "@/lib/rpc";
+
+// Your own private piece, with the option to ask the host to project it.
+function PresentablePiece({ roundId, content }: { roundId: string; content: string }) {
+  const [requested, setRequested] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const send = async () => {
+    setBusy(true);
+    try {
+      await requestPresent(roundId);
+      setRequested(true);
+    } catch {
+      /* let them retry */
+    }
+    setBusy(false);
+  };
+  return (
+    <div className="screen flex flex-col px-7 py-10">
+      <p className="text-sm text-zinc-400">What you wrote</p>
+      <div className="mt-4 flex-1 overflow-y-auto whitespace-pre-wrap text-lg leading-relaxed text-zinc-900">
+        {content || "(nothing yet)"}
+      </div>
+      <button
+        onClick={send}
+        disabled={busy || requested}
+        className="mt-4 rounded-xl bg-zinc-900 py-3 font-medium text-white disabled:opacity-50"
+      >
+        {requested ? "✓ Sent to the host" : "Present to the room"}
+      </button>
+      <p className="mt-2 text-center text-xs text-zinc-300">
+        Private by default — only shared if you ask and the host picks it.
+      </p>
+    </div>
+  );
+}
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
@@ -21,7 +56,6 @@ export default function PhaseView({
   roster,
   pairing,
   reveal,
-  partnerSubmission,
 }: {
   room: RoomState;
   round: Round | null;
@@ -29,7 +63,6 @@ export default function PhaseView({
   roster: Participant[];
   pairing: Pairing | null;
   reveal: { author_id: string; content: string; lost: boolean } | null;
-  partnerSubmission: { content: string; lost: boolean } | null;
 }) {
   const nameById = useMemo(() => {
     const m = new Map<string, string>();
@@ -64,7 +97,14 @@ export default function PhaseView({
     case "pairing":
       if (isTinder && round) {
         // Not matched yet → keep swiping. Matched → show partner + the card.
-        if (!pairing) return <SwipeDeck roundId={round.id} levels={round.constraints.deckLevels} />;
+        if (!pairing)
+          return (
+            <SwipeDeck
+              roundId={round.id}
+              order={round.constraints.deckOrder}
+              levels={round.constraints.deckLevels}
+            />
+          );
         return (
           <Centered>
             <div className="text-5xl">🤝</div>
@@ -140,23 +180,9 @@ export default function PhaseView({
       );
 
     case "reveal": {
-      // Tinder: you each wrote your own piece on the shared card — now swap.
-      if (isTinder) {
-        return (
-          <div className="screen flex flex-col px-7 py-10">
-            <p className="text-sm text-zinc-400">
-              What <span className="font-medium text-zinc-700">{partnerName ?? "your partner"}</span> wrote
-            </p>
-            {cardText && <p className="mt-1 text-xs text-zinc-300">on “{cardText}”</p>}
-            <div className="mt-5 flex-1 overflow-y-auto whitespace-pre-wrap text-lg leading-relaxed text-zinc-900">
-              {partnerSubmission
-                ? partnerSubmission.lost
-                  ? "💨 …their words were lost."
-                  : partnerSubmission.content || "(nothing)"
-                : "Waiting for their words…"}
-            </div>
-          </div>
-        );
+      // Tinder: your piece is private — you see your own, and may ask to present.
+      if (isTinder && round) {
+        return <PresentablePiece roundId={round.id} content={reveal?.content ?? ""} />;
       }
       if (round?.write_target === "partner") {
         if (reveal) {
