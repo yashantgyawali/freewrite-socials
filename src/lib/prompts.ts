@@ -20,9 +20,8 @@ export function getPromptText(id: string | null | undefined): string {
   return getPrompt(id)?.text ?? "";
 }
 
-// Cards are shown in shared batches of this size so everyone swipes the same
-// questions (which is what makes mutual matches actually happen).
-export const BATCH_SIZE = 12;
+// Each person swipes their own randomly-shuffled deck, in batches of this size.
+export const BATCH_SIZE = 15;
 
 // A shuffled deck for swiping, optionally restricted to certain levels.
 export function buildDeck(levels?: number[]): Prompt[] {

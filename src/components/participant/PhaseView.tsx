@@ -1,16 +1,43 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Participant, Pairing, Round, RoomState } from "@/lib/types";
 import WritingSurface from "@/components/writing/WritingSurface";
 import SwipeDeck from "@/components/participant/SwipeDeck";
 import { getPromptText } from "@/lib/prompts";
-import { requestPresent } from "@/lib/rpc";
+import { requestPresent, saveWriting } from "@/lib/rpc";
 
-// Your own private piece, with the option to ask the host to project it.
+// Your own private piece, with on-device grammar cleanup and the option to ask
+// the host to project it.
 function PresentablePiece({ roundId, content }: { roundId: string; content: string }) {
+  const [text, setText] = useState(content);
   const [requested, setRequested] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [fixing, setFixing] = useState(false);
+  const [fixNote, setFixNote] = useState<string | null>(null);
+  const touched = useRef(false);
+
+  // Mirror the loaded submission until the user runs a fix of their own.
+  useEffect(() => {
+    if (!touched.current) setText(content);
+  }, [content]);
+
+  const fix = async () => {
+    setFixing(true);
+    setFixNote(null);
+    touched.current = true;
+    try {
+      const { fixWithHarper } = await import("@/lib/harper");
+      const { fixed, count } = await fixWithHarper(text);
+      setText(fixed);
+      await saveWriting(roundId, fixed, true); // persist the cleaned-up version
+      setFixNote(count > 0 ? `Fixed ${count} ${count === 1 ? "thing" : "things"}` : "Looks clean already ✓");
+    } catch {
+      setFixNote("Couldn't load Harper — check your connection");
+    }
+    setFixing(false);
+  };
+
   const send = async () => {
     setBusy(true);
     try {
@@ -21,21 +48,32 @@ function PresentablePiece({ roundId, content }: { roundId: string; content: stri
     }
     setBusy(false);
   };
+
   return (
     <div className="screen flex flex-col px-7 py-10">
       <p className="text-sm text-zinc-400">What you wrote</p>
       <div className="mt-4 flex-1 overflow-y-auto whitespace-pre-wrap text-lg leading-relaxed text-zinc-900">
-        {content || "(nothing yet)"}
+        {text || "(nothing yet)"}
       </div>
-      <button
-        onClick={send}
-        disabled={busy || requested}
-        className="mt-4 rounded-xl bg-zinc-900 py-3 font-medium text-white disabled:opacity-50"
-      >
-        {requested ? "✓ Sent to the host" : "Present to the room"}
-      </button>
+      {fixNote && <p className="mt-2 text-xs text-zinc-400">{fixNote}</p>}
+      <div className="mt-4 flex flex-col gap-2">
+        <button
+          onClick={fix}
+          disabled={fixing || busy}
+          className="rounded-xl border border-zinc-300 py-3 font-medium text-zinc-700 disabled:opacity-50"
+        >
+          {fixing ? "Fixing with Harper…" : "✦ Fix with Harper"}
+        </button>
+        <button
+          onClick={send}
+          disabled={busy || requested}
+          className="rounded-xl bg-zinc-900 py-3 font-medium text-white disabled:opacity-50"
+        >
+          {requested ? "✓ Sent to the host" : "Present to the room"}
+        </button>
+      </div>
       <p className="mt-2 text-center text-xs text-zinc-300">
-        Private by default — only shared if you ask and the host picks it.
+        Harper fixes grammar & punctuation on your device — no AI. Private unless you present.
       </p>
     </div>
   );
@@ -98,13 +136,7 @@ export default function PhaseView({
       if (isTinder && round) {
         // Not matched yet → keep swiping. Matched → show partner + the card.
         if (!pairing)
-          return (
-            <SwipeDeck
-              roundId={round.id}
-              order={round.constraints.deckOrder}
-              levels={round.constraints.deckLevels}
-            />
-          );
+          return <SwipeDeck roundId={round.id} levels={round.constraints.deckLevels} />;
         return (
           <Centered>
             <div className="text-5xl">🤝</div>

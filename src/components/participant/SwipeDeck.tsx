@@ -1,27 +1,25 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { promptsFromOrder, BATCH_SIZE } from "@/lib/prompts";
+import { buildDeck, BATCH_SIZE } from "@/lib/prompts";
 import { swipe } from "@/lib/rpc";
 
 // Pass too many in a row and you're forced to say yes to the next one.
 const PASS_LIMIT = 10;
 
 // Tinder-style prompt deck. Right = "I'd talk about this", left = pass.
-// Cards come in a shared, fixed order (same batches of 12 for everyone) so
-// mutual right-swipes on the same card actually happen. A mutual match pairs
-// you server-side; the parent swaps this out for the matched view.
+// Each person gets their own randomly-shuffled deck so matches surface
+// organically (the server pairs anyone who's liked the same card). A mutual
+// match pairs you server-side; the parent swaps this out for the matched view.
 export default function SwipeDeck({
   roundId,
-  order,
   levels,
 }: {
   roundId: string;
-  order?: string[];
   levels?: number[];
 }) {
-  // Built once on mount — never reshuffle under the user.
-  const [deck] = useState(() => promptsFromOrder(order, levels));
+  // Built once on mount — random per device, never reshuffle under the user.
+  const [deck] = useState(() => buildDeck(levels));
   const [index, setIndex] = useState(0);
   const [dragX, setDragX] = useState(0);
   const [exiting, setExiting] = useState<null | "left" | "right">(null);
