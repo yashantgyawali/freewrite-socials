@@ -284,6 +284,10 @@ function PlainField({
 }
 
 // ---- disappearing text -------------------------------------------------------
+// Uses a real textarea (transparent text, natural cursor) with a synced overlay
+// that renders each character with opacity tied to how long ago it was typed.
+
+const FADE_MS = 2600;
 
 function FadeField({
   disabled,
@@ -292,64 +296,77 @@ function FadeField({
   disabled: boolean;
   onBuffer: (v: string) => void;
 }) {
-  const bufferRef = useRef("");
-  const idRef = useRef(0);
-  const composing = useRef(false);
-  const [raw, setRaw] = useState("");
-  const [chars, setChars] = useState<{ id: number; ch: string }[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const timestamps = useRef<number[]>([]);
+  const [value, setValue] = useState("");
+  // Tick every 80ms so opacity updates smoothly while chars are fading.
+  const [, tick] = useState(0);
 
-  useEffect(() => { inputRef.current?.focus(); }, []);
+  useEffect(() => {
+    ref.current?.focus();
+  }, []);
 
-  const commit = useCallback(
-    (text: string) => {
-      if (!text) return;
-      bufferRef.current += text;
-      onBuffer(bufferRef.current);
-      const fresh = [...text].map((ch) => ({ id: idRef.current++, ch }));
-      setChars((prev) => [...prev, ...fresh].slice(-60));
-      fresh.forEach((c) =>
-        setTimeout(() => setChars((prev) => prev.filter((x) => x.id !== c.id)), 2600),
-      );
-    },
-    [onBuffer],
-  );
+  useEffect(() => {
+    const id = setInterval(() => tick((n) => n + 1), 80);
+    return () => clearInterval(id);
+  }, []);
+
+  const now = Date.now();
 
   return (
-    <div className="relative flex-1 overflow-hidden" onClick={() => inputRef.current?.focus()}>
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-8">
-        <p className="text-center text-2xl leading-relaxed text-zinc-800 break-words">
-          {chars.map((c) => (
-            <span key={c.id} className="fade-char">
-              {c.ch === " " ? " " : c.ch}
+    <div className="relative flex-1 overflow-hidden">
+      {/* Fading character overlay — same metrics as the textarea */}
+      <div
+        ref={overlayRef}
+        aria-hidden
+        className="pointer-events-none absolute inset-0 px-7 py-2 text-lg leading-relaxed text-zinc-900 overflow-y-scroll"
+        style={{
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+          overflowX: "hidden",
+          scrollbarWidth: "none",
+        }}
+      >
+        {[...value].map((ch, i) => {
+          const age = now - (timestamps.current[i] ?? now);
+          const opacity = Math.max(0, 1 - age / FADE_MS);
+          // Keep invisible chars in the DOM so layout stays identical to textarea.
+          return (
+            <span key={i} style={{ opacity }}>
+              {ch}
             </span>
-          ))}
-          <span className="blink text-zinc-400">▌</span>
-        </p>
+          );
+        })}
       </div>
 
-      <input
-        ref={inputRef}
-        value={raw}
+      {/* Real textarea: transparent text, natural cursor */}
+      <textarea
+        ref={ref}
+        value={value}
         disabled={disabled}
         autoCorrect="off"
-        autoCapitalize="none"
-        autoComplete="off"
+        autoCapitalize="sentences"
         spellCheck={false}
-        aria-label="writing"
-        className="absolute inset-0 h-full w-full bg-transparent text-center outline-none"
-        style={{ color: "transparent", caretColor: "transparent" }}
-        onCompositionStart={() => { composing.current = true; }}
-        onCompositionEnd={(e) => {
-          composing.current = false;
-          commit(e.currentTarget.value);
-          setRaw("");
+        placeholder="Start writing…"
+        className="absolute inset-0 h-full w-full resize-none bg-transparent px-7 py-2 text-lg leading-relaxed outline-none placeholder:text-zinc-300"
+        style={{
+          color: "transparent",
+          caretColor: "#18181b",
+          userSelect: "none",
+          WebkitUserSelect: "none",
         }}
         onChange={(e) => {
-          const v = e.target.value;
-          if (composing.current) { setRaw(v); return; }
-          commit(v);
-          setRaw("");
+          const next = e.target.value;
+          if (!next.startsWith(value)) return; // reject any deletion
+          const t = Date.now();
+          for (let i = value.length; i < next.length; i++) timestamps.current.push(t);
+          setValue(next);
+          onBuffer(next);
+        }}
+        onScroll={(e) => {
+          // Keep overlay in sync so fading chars appear at the right y-position.
+          if (overlayRef.current) overlayRef.current.scrollTop = e.currentTarget.scrollTop;
         }}
         onKeyDown={(e) => {
           if (e.key === "Backspace" || e.key === "Delete") e.preventDefault();
@@ -358,17 +375,15 @@ function FadeField({
           const t = (e.nativeEvent as InputEvent).inputType ?? "";
           if (t.startsWith("delete")) e.preventDefault();
         }}
+        onSelect={(e) => {
+          // Keep cursor pinned to end.
+          const el = e.currentTarget;
+          el.selectionStart = el.selectionEnd = el.value.length;
+        }}
+        onCut={(e) => e.preventDefault()}
         onPaste={(e) => e.preventDefault()}
+        onContextMenu={(e) => e.preventDefault()}
       />
-
-      <style jsx>{`
-        .fade-char { animation: fade 2.6s forwards; }
-        @keyframes fade {
-          0% { opacity: 1; }
-          70% { opacity: 0.9; }
-          100% { opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }
