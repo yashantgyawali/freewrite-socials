@@ -421,18 +421,18 @@ export default function AdminPage() {
           {room.phase === "pairing" && (
             <>
               <button
-                onClick={() => phase("writing", config?.durationSecs ?? round?.duration_secs)}
-                disabled={busy}
-                className="w-full rounded-2xl bg-zinc-900 py-4 text-sm font-medium text-white disabled:opacity-40"
-              >
-                Start writing →
-              </button>
-              <button
                 onClick={() => phase("talk", config?.talkSecs ?? 120)}
                 disabled={busy}
                 className="w-full rounded-2xl bg-zinc-100 py-3.5 text-sm font-medium text-zinc-700 disabled:opacity-40"
               >
                 Begin talk first
+              </button>
+              <button
+                onClick={() => phase("writing", config?.durationSecs ?? round?.duration_secs)}
+                disabled={busy}
+                className="w-full rounded-2xl bg-zinc-900 py-4 text-sm font-medium text-white disabled:opacity-40"
+              >
+                Start writing →
               </button>
             </>
           )}

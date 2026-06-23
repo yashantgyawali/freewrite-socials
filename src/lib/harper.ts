@@ -32,6 +32,7 @@ const SAFE_KINDS = new Set([
   "Agreement",
   "Repetition",
   "BoundaryError",
+  "Spelling",
 ]);
 
 const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");

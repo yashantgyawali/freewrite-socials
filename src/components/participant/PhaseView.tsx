@@ -52,9 +52,12 @@ function PresentablePiece({ roundId, content }: { roundId: string; content: stri
   return (
     <div className="screen flex flex-col px-8 py-12">
       <p className="text-sm text-zinc-400">What you wrote</p>
-      <div className="mt-4 flex-1 overflow-y-auto whitespace-pre-wrap text-lg leading-relaxed text-zinc-900">
-        {text || "(nothing yet)"}
-      </div>
+      <textarea
+        className="mt-4 flex-1 resize-none whitespace-pre-wrap text-lg leading-relaxed text-zinc-900 outline-none bg-transparent"
+        value={text}
+        onChange={(e) => { touched.current = true; setText(e.target.value); }}
+        placeholder="(nothing yet)"
+      />
       {fixNote && <p className="mt-2 text-xs text-zinc-400">{fixNote}</p>}
       <div className="mt-4 flex flex-col gap-2">
         <button
