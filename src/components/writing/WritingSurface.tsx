@@ -65,7 +65,7 @@ export default function WritingSurface({
     if (!bomb?.enabled || out || finalizedRef.current) return;
     if (idleTimer.current) clearTimeout(idleTimer.current);
     idleStartRef.current = Date.now();
-    idleTimer.current = setTimeout(triggerOut, (bomb.timeoutSecs || 5) * 1000);
+    idleTimer.current = setTimeout(triggerOut, 5000);
   }, [bomb?.enabled, bomb?.timeoutSecs, out, triggerOut]);
 
   const startOver = useCallback(() => {
@@ -129,16 +129,14 @@ export default function WritingSurface({
         return;
       }
       const elapsed = (Date.now() - idleStartRef.current) / 1000;
-      const progress = Math.min(1, elapsed / bomb.timeoutSecs!);
 
-      // Start shaking after 40% of idle time, ramp to full intensity
-      if (progress < 0.4) {
+      if (elapsed < 2.5) {
         setShakeStyle({});
         setBombTint(0);
         return;
       }
 
-      const intensity = Math.pow((progress - 0.4) / 0.6, 1.8);
+      const intensity = Math.pow((elapsed - 2.5) / 2.5, 1.8);
       const amp = intensity * 18;
       const x = (Math.random() - 0.5) * amp * 2;
       const y = (Math.random() - 0.5) * amp * 0.35;
@@ -284,8 +282,9 @@ function PlainField({
 }
 
 // ---- disappearing text -------------------------------------------------------
-// Uses a real textarea (transparent text, natural cursor) with a synced overlay
-// that renders each character with opacity tied to how long ago it was typed.
+// The cursor and fading text live in the same overlay div so they can never
+// diverge. The textarea underneath is invisible (transparent text + caret) and
+// only exists to capture keyboard input from the OS.
 
 const FADE_MS = 2600;
 
@@ -296,17 +295,17 @@ function FadeField({
   disabled: boolean;
   onBuffer: (v: string) => void;
 }) {
-  const ref = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const timestamps = useRef<number[]>([]);
   const [value, setValue] = useState("");
-  // Tick every 80ms so opacity updates smoothly while chars are fading.
   const [, tick] = useState(0);
 
   useEffect(() => {
-    ref.current?.focus();
+    textareaRef.current?.focus();
   }, []);
 
+  // Re-render every 80 ms to update per-character opacity.
   useEffect(() => {
     const id = setInterval(() => tick((n) => n + 1), 80);
     return () => clearInterval(id);
@@ -316,57 +315,49 @@ function FadeField({
 
   return (
     <div className="relative flex-1 overflow-hidden">
-      {/* Fading character overlay — same metrics as the textarea */}
+      {/* Visual layer: fading characters + blinking cursor, all in one div. */}
       <div
         ref={overlayRef}
         aria-hidden
-        className="pointer-events-none absolute inset-0 px-7 py-2 text-lg leading-relaxed text-zinc-900 overflow-y-scroll"
-        style={{
-          whiteSpace: "pre-wrap",
-          wordBreak: "break-word",
-          overflowX: "hidden",
-          scrollbarWidth: "none",
-        }}
+        className="pointer-events-none absolute inset-0 overflow-y-auto px-7 py-2 text-lg leading-relaxed text-zinc-900"
+        style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", scrollbarWidth: "none" }}
       >
+        {value.length === 0 && (
+          <span className="text-zinc-300">Start writing…</span>
+        )}
         {[...value].map((ch, i) => {
           const age = now - (timestamps.current[i] ?? now);
-          const opacity = Math.max(0, 1 - age / FADE_MS);
-          // Keep invisible chars in the DOM so layout stays identical to textarea.
-          return (
-            <span key={i} style={{ opacity }}>
-              {ch}
-            </span>
-          );
+          // Keep opacity slightly above 0 for fully-faded chars so they still
+          // occupy space in the layout — cursor stays at the correct position.
+          const opacity = Math.max(0.001, 1 - age / FADE_MS);
+          return <span key={i} style={{ opacity }}>{ch}</span>;
         })}
+        {/* Cursor lives here, after the last character — always in the right spot. */}
+        <span className="fade-cursor" />
       </div>
 
-      {/* Real textarea: transparent text, natural cursor */}
+      {/* Input capture: fully invisible, no caret. */}
       <textarea
-        ref={ref}
+        ref={textareaRef}
         value={value}
         disabled={disabled}
         autoCorrect="off"
         autoCapitalize="sentences"
         spellCheck={false}
-        placeholder="Start writing…"
-        className="absolute inset-0 h-full w-full resize-none bg-transparent px-7 py-2 text-lg leading-relaxed outline-none placeholder:text-zinc-300"
-        style={{
-          color: "transparent",
-          caretColor: "#18181b",
-          userSelect: "none",
-          WebkitUserSelect: "none",
-        }}
+        className="absolute inset-0 h-full w-full resize-none bg-transparent px-7 py-2 text-lg leading-relaxed outline-none"
+        style={{ color: "transparent", caretColor: "transparent", userSelect: "none", WebkitUserSelect: "none" }}
         onChange={(e) => {
           const next = e.target.value;
-          if (!next.startsWith(value)) return; // reject any deletion
+          if (!next.startsWith(value)) return;
           const t = Date.now();
           for (let i = value.length; i < next.length; i++) timestamps.current.push(t);
           setValue(next);
           onBuffer(next);
-        }}
-        onScroll={(e) => {
-          // Keep overlay in sync so fading chars appear at the right y-position.
-          if (overlayRef.current) overlayRef.current.scrollTop = e.currentTarget.scrollTop;
+          // Scroll overlay so cursor is always visible.
+          requestAnimationFrame(() => {
+            if (overlayRef.current)
+              overlayRef.current.scrollTop = overlayRef.current.scrollHeight;
+          });
         }}
         onKeyDown={(e) => {
           if (e.key === "Backspace" || e.key === "Delete") e.preventDefault();
@@ -376,7 +367,6 @@ function FadeField({
           if (t.startsWith("delete")) e.preventDefault();
         }}
         onSelect={(e) => {
-          // Keep cursor pinned to end.
           const el = e.currentTarget;
           el.selectionStart = el.selectionEnd = el.value.length;
         }}
@@ -384,6 +374,22 @@ function FadeField({
         onPaste={(e) => e.preventDefault()}
         onContextMenu={(e) => e.preventDefault()}
       />
+
+      <style jsx>{`
+        .fade-cursor {
+          display: inline-block;
+          width: 2px;
+          height: 1.1em;
+          background: #18181b;
+          vertical-align: text-bottom;
+          margin-left: 1px;
+          animation: cur-blink 1s step-end infinite;
+        }
+        @keyframes cur-blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
