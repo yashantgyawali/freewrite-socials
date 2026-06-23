@@ -50,7 +50,7 @@ function PresentablePiece({ roundId, content }: { roundId: string; content: stri
   };
 
   return (
-    <div className="screen flex flex-col px-7 py-10">
+    <div className="screen flex flex-col px-8 py-12">
       <p className="text-sm text-zinc-400">What you wrote</p>
       <div className="mt-4 flex-1 overflow-y-auto whitespace-pre-wrap text-lg leading-relaxed text-zinc-900">
         {text || "(nothing yet)"}
@@ -220,7 +220,7 @@ export default function PhaseView({
         if (reveal) {
           const author = nameById.get(reveal.author_id) ?? "Someone";
           return (
-            <div className="screen flex flex-col px-7 py-10">
+            <div className="screen flex flex-col px-8 py-12">
               <p className="text-sm text-zinc-400">
                 <span className="font-medium text-zinc-700">{author}</span> wrote about you
               </p>
@@ -239,7 +239,7 @@ export default function PhaseView({
       }
       // self round: show your own piece back
       return (
-        <div className="screen flex flex-col px-7 py-10">
+        <div className="screen flex flex-col px-8 py-12">
           <p className="text-sm text-zinc-400">What you wrote</p>
           <div className="mt-5 flex-1 overflow-y-auto whitespace-pre-wrap text-lg leading-relaxed text-zinc-900">
             {reveal?.content || "(saved)"}

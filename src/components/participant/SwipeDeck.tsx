@@ -4,13 +4,14 @@ import { useRef, useState } from "react";
 import { buildDeck, BATCH_SIZE } from "@/lib/prompts";
 import { swipe } from "@/lib/rpc";
 
-// Pass too many in a row and you're forced to say yes to the next one.
-const PASS_LIMIT = 10;
+const PASS_LIMIT = 5;
 
-// Tinder-style prompt deck. Right = "I'd talk about this", left = pass.
-// Each person gets their own randomly-shuffled deck so matches surface
-// organically (the server pairs anyone who's liked the same card). A mutual
-// match pairs you server-side; the parent swaps this out for the matched view.
+const LEVEL_COLORS: Record<number, string> = {
+  1: "#e0f0ff",
+  2: "#fde8d8",
+  3: "#f0dff8",
+};
+
 export default function SwipeDeck({
   roundId,
   levels,
@@ -18,7 +19,6 @@ export default function SwipeDeck({
   roundId: string;
   levels?: number[];
 }) {
-  // Built once on mount — random per device, never reshuffle under the user.
   const [deck] = useState(() => buildDeck(levels));
   const [index, setIndex] = useState(0);
   const [dragX, setDragX] = useState(0);
@@ -30,14 +30,15 @@ export default function SwipeDeck({
   const startX = useRef<number | null>(null);
 
   const card = deck[index];
+  const nextCard = deck[index + 1];
   const batch = Math.floor(index / BATCH_SIZE) + 1;
   const posInBatch = (index % BATCH_SIZE) + 1;
-  const forced = noStreak >= PASS_LIMIT; // must say yes
+  const forced = noStreak >= PASS_LIMIT;
   const heartsLeft = Math.max(0, PASS_LIMIT - noStreak);
 
   const commit = async (liked: boolean) => {
     if (busy || matched || !card) return;
-    if (forced && !liked) return; // out of hearts — can't pass
+    if (forced && !liked) return;
     setBusy(true);
     setExiting(liked ? "right" : "left");
     try {
@@ -47,7 +48,7 @@ export default function SwipeDeck({
         return;
       }
     } catch {
-      /* ignore; let them retry */
+      /* ignore */
     }
     setTimeout(() => {
       const next = index + 1;
@@ -55,9 +56,7 @@ export default function SwipeDeck({
       setDragX(0);
       setExiting(null);
       setBusy(false);
-      // a no costs a heart; a yes refills one (not all)
       setNoStreak((s) => (liked ? Math.max(0, s - 1) : Math.min(PASS_LIMIT, s + 1)));
-      // crossed a batch boundary with no match → pause for the next 12
       if (next < deck.length && next % BATCH_SIZE === 0) setBatchBreak(true);
     }, 220);
   };
@@ -76,10 +75,7 @@ export default function SwipeDeck({
     const dx = dragX;
     startX.current = null;
     if (Math.abs(dx) > 90) {
-      if (forced && dx < 0) {
-        setDragX(0); // out of hearts — left swipe snaps back
-        return;
-      }
+      if (forced && dx < 0) { setDragX(0); return; }
       commit(dx > 0);
     } else setDragX(0);
   };
@@ -124,94 +120,137 @@ export default function SwipeDeck({
   const dragging = startX.current != null;
   const rot = Math.max(-12, Math.min(12, dragX / 12));
   const exitX = exiting === "right" ? 600 : exiting === "left" ? -600 : dragX;
-  const likeOpacity = Math.max(0, Math.min(1, dragX / 90));
-  const nopeOpacity = Math.max(0, Math.min(1, -dragX / 90));
+  const likeOpacity = Math.max(0, Math.min(1, dragX / 80));
+  const nopeOpacity = Math.max(0, Math.min(1, -dragX / 80));
+  const cardBg = LEVEL_COLORS[card.level] ?? "#f4f4f5";
 
   return (
-    <div className="screen flex flex-col">
-      <header className="px-5 pt-5 text-center">
-        <p className="text-xs uppercase tracking-widest text-zinc-300">
-          Find someone to write with
-        </p>
-        <p className="mt-1 text-sm text-zinc-400">
-          Swipe right on a question you&apos;d love to talk about.
-        </p>
-        <p className="mt-2 text-xs text-zinc-300">
-          Batch {batch} · {posInBatch}/{BATCH_SIZE}
-        </p>
-        <div
-          className="mt-2 flex items-center justify-center gap-1"
-          aria-label={`${heartsLeft} passes left`}
-        >
+    <div className="screen flex flex-col bg-zinc-50">
+      {/* Header */}
+      <header className="px-6 pt-8 pb-2 text-center">
+        <p className="text-sm font-medium text-zinc-400">Find someone to write with</p>
+        {/* Hearts */}
+        <div className="mt-2 flex items-center justify-center gap-1.5">
           {Array.from({ length: PASS_LIMIT }).map((_, i) => (
-            <span key={i} className={`text-sm ${i < heartsLeft ? "text-rose-400" : "text-zinc-200"}`}>
-              ♥
-            </span>
+            <svg
+              key={i}
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill={i < heartsLeft ? "#fb7185" : "#e4e4e7"}
+            >
+              <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" />
+            </svg>
           ))}
         </div>
         {forced && (
           <p className="mt-1 text-xs font-medium text-rose-500">
-            Out of hearts — say yes to this one 💛
+            Say yes to this one to keep going
           </p>
         )}
       </header>
 
+      {/* Card stack */}
       <div className="relative flex flex-1 items-center justify-center px-6">
-        {deck[index + 1] && (
-          <div className="absolute h-[58%] w-full max-w-sm translate-y-3 scale-95 rounded-3xl bg-zinc-100" />
+        {/* Background card (next) */}
+        {nextCard && (
+          <div
+            className="absolute w-full max-w-sm rounded-3xl shadow-sm"
+            style={{
+              height: "62%",
+              background: LEVEL_COLORS[nextCard.level] ?? "#f4f4f5",
+              transform: "translateY(10px) scale(0.95)",
+            }}
+          />
         )}
+
+        {/* Active card */}
         <div
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerCancel={onUp}
-          className="relative flex min-h-[58%] w-full max-w-sm touch-none select-none flex-col rounded-3xl border border-zinc-200 bg-white p-7 shadow-sm"
+          className="relative flex w-full max-w-sm touch-none select-none flex-col overflow-hidden rounded-3xl shadow-lg"
           style={{
+            height: "62%",
+            background: cardBg,
             transform: `translateX(${exitX}px) rotate(${
               exiting ? (exiting === "right" ? 18 : -18) : rot
             }deg)`,
             transition: exiting || !dragging ? "transform .22s ease-out" : "none",
           }}
         >
-          <div className="flex items-center justify-between">
-            <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs text-zinc-500">
-              {card.levelName}
-            </span>
-            <span className="text-xs text-zinc-300">{card.category}</span>
+          {/* Colored top band */}
+          <div className="flex-1 p-7 flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-white/60 px-3 py-1 text-xs font-medium text-zinc-600 backdrop-blur-sm">
+                {card.levelName}
+              </span>
+              <span className="text-xs text-zinc-400/70">{card.category}</span>
+            </div>
+            <p className="text-2xl font-semibold leading-snug text-zinc-900 mt-6">
+              {card.text}
+            </p>
           </div>
-          <p className="mt-7 text-2xl font-medium leading-snug text-zinc-900">{card.text}</p>
 
+          {/* Progress bar at bottom */}
+          <div className="px-7 pb-5">
+            <div className="flex gap-1">
+              {Array.from({ length: BATCH_SIZE }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-1 flex-1 rounded-full"
+                  style={{
+                    background: i < posInBatch ? "rgba(0,0,0,0.25)" : "rgba(0,0,0,0.08)",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* TALK stamp */}
           <span
-            className="pointer-events-none absolute left-6 top-6 -rotate-12 rounded-md border-2 border-emerald-500 px-2 py-0.5 text-sm font-bold tracking-wide text-emerald-500"
+            className="pointer-events-none absolute left-6 top-7 -rotate-12 rounded-lg border-[3px] border-emerald-500 px-2.5 py-1 text-base font-black tracking-widest text-emerald-500 uppercase"
             style={{ opacity: likeOpacity }}
           >
-            TALK
+            Talk
           </span>
+          {/* PASS stamp */}
           <span
-            className="pointer-events-none absolute right-6 top-6 rotate-12 rounded-md border-2 border-rose-500 px-2 py-0.5 text-sm font-bold tracking-wide text-rose-500"
+            className="pointer-events-none absolute right-6 top-7 rotate-12 rounded-lg border-[3px] border-rose-500 px-2.5 py-1 text-base font-black tracking-widest text-rose-500 uppercase"
             style={{ opacity: nopeOpacity }}
           >
-            PASS
+            Pass
           </span>
         </div>
       </div>
 
-      <footer className="flex items-center justify-center gap-10 px-6 py-7">
+      {/* Buttons */}
+      <footer className="flex items-center justify-center gap-8 px-6 py-8">
+        {/* Pass — white circle */}
         <button
           aria-label="pass"
           onClick={() => commit(false)}
           disabled={busy || forced}
-          className="flex h-16 w-16 items-center justify-center rounded-full border border-zinc-200 text-2xl text-rose-500 disabled:opacity-20"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-md disabled:opacity-30 active:scale-95 transition-transform"
         >
-          ✗
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9f9f9f" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
+
+        {/* Like — coral circle */}
         <button
           aria-label="talk about this"
           onClick={() => commit(true)}
           disabled={busy}
-          className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-900 text-2xl text-white disabled:opacity-40"
+          className="flex h-[72px] w-[72px] items-center justify-center rounded-full shadow-md disabled:opacity-40 active:scale-95 transition-transform"
+          style={{ background: "#ff6b6b" }}
         >
-          ♥
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+            <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" />
+          </svg>
         </button>
       </footer>
     </div>
