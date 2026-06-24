@@ -69,6 +69,64 @@ function toConstraints(c: Config): Constraints {
   return out;
 }
 
+const FAREWELL =
+  `Thank you all for being a part of my session. This is so much fun to connect and see all your beautiful writings. There's a freewrite app if you want to get started with it. And it was created by Farza (one of the people I look up to quite a lot).
+
+Come to me, say hi and I'll share a link to the little app that lives right in your Mac.
+
+Hope you had a lot of fun.`;
+
+function FreewroteMessage() {
+  return (
+    <div
+      className="min-h-dvh bg-white flex flex-col select-none"
+      style={{ fontFamily: "'Lato', 'Arial', sans-serif" }}
+    >
+      {/* Writing surface */}
+      <div className="flex-1 pt-16 pb-4" style={{ paddingLeft: "22%", paddingRight: "12%" }}>
+        <p
+          className="whitespace-pre-wrap text-zinc-800"
+          style={{ fontSize: 24, lineHeight: 1.75, maxWidth: 660 }}
+        >
+          {FAREWELL}
+          <span
+            className="blink inline-block align-text-bottom ml-px"
+            style={{ width: 2, height: "1.1em", background: "#3b82f6" }}
+          />
+        </p>
+      </div>
+
+      {/* Status bar — mimics the freewrite desktop app */}
+      <footer
+        className="flex items-center justify-between px-6 py-2 border-t border-zinc-100 text-zinc-400"
+        style={{ fontSize: 13 }}
+      >
+        <div className="flex items-center gap-2.5">
+          <span>24px</span>
+          <Dot /><span className="text-zinc-700 font-medium">Lato</span>
+          <Dot /><span>Arial</span>
+          <Dot /><span>System</span>
+          <Dot /><span>Serif</span>
+          <Dot /><span>Random</span>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <span>15:00</span>
+          <Dot /><span>Chat</span>
+          <Dot /><span>Backspace is On</span>
+          <Dot /><span>Minimize</span>
+          <Dot /><span>New Entry</span>
+          <Dot /><span>🌙</span>
+          <Dot /><span>↩</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function Dot() {
+  return <span className="text-zinc-200">•</span>;
+}
+
 function GearIcon() {
   return (
     <svg
@@ -339,6 +397,11 @@ export default function AdminPage() {
         )}
       </div>
     );
+  }
+
+  // ── Ended view ───────────────────────────────────────────────────────────────
+  if (room.status === "ended") {
+    return <FreewroteMessage />;
   }
 
   // ── Session view ─────────────────────────────────────────────────────────────

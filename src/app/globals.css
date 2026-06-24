@@ -25,13 +25,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Full-height app screen that respects the mobile keyboard and notches. */
-.screen {
-  min-height: 100dvh;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+/* Full-height app screen that respects the mobile keyboard and notches.
+   In @layer components so Tailwind utility classes (px-*, py-*, etc.) can
+   override these safe-area defaults when screens need their own padding. */
+@layer components {
+  .screen {
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
 /* Inputs at >=16px so iOS Safari doesn't zoom on focus. */

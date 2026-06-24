@@ -15,6 +15,7 @@ function PresentablePiece({ roundId, content }: { roundId: string; content: stri
   const [busy, setBusy] = useState(false);
   const [fixing, setFixing] = useState(false);
   const [fixNote, setFixNote] = useState<string | null>(null);
+  const [preFixText, setPreFixText] = useState<string | null>(null);
   const touched = useRef(false);
 
   // Mirror the loaded submission until the user runs a fix of their own.
@@ -26,16 +27,26 @@ function PresentablePiece({ roundId, content }: { roundId: string; content: stri
     setFixing(true);
     setFixNote(null);
     touched.current = true;
+    const before = text;
     try {
       const { fixWithHarper } = await import("@/lib/harper");
       const { fixed, count } = await fixWithHarper(text);
       setText(fixed);
+      setPreFixText(before);
       await saveWriting(roundId, fixed, true); // persist the cleaned-up version
       setFixNote(count > 0 ? `Fixed ${count} ${count === 1 ? "thing" : "things"}` : "Looks clean already ✓");
     } catch {
       setFixNote("Couldn't load Harper — check your connection");
     }
     setFixing(false);
+  };
+
+  const undo = async () => {
+    if (preFixText === null) return;
+    setText(preFixText);
+    setPreFixText(null);
+    setFixNote(null);
+    await saveWriting(roundId, preFixText, true);
   };
 
   const send = async () => {
@@ -61,11 +72,11 @@ function PresentablePiece({ roundId, content }: { roundId: string; content: stri
       {fixNote && <p className="mt-2 text-xs text-zinc-400">{fixNote}</p>}
       <div className="mt-4 flex flex-col gap-2">
         <button
-          onClick={fix}
+          onClick={preFixText !== null ? undo : fix}
           disabled={fixing || busy}
           className="rounded-xl border border-zinc-300 py-3 font-medium text-zinc-700 disabled:opacity-50"
         >
-          {fixing ? "Fixing with Harper…" : "✦ Fix with Harper"}
+          {fixing ? "Fixing with Harper…" : preFixText !== null ? "↩ Undo fix" : "✦ Fix with Harper"}
         </button>
         <button
           onClick={send}
