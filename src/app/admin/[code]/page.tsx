@@ -684,16 +684,14 @@ export default function AdminPage() {
             </div>
 
             {/* End session */}
-            {room.status !== "ended" && (
-              <div className="px-6 py-5 border-t border-zinc-100">
-                <button
-                  onClick={() => endRoom(room.id, admin.secret)}
-                  className="text-sm text-red-400 hover:text-red-600"
-                >
-                  End session
-                </button>
-              </div>
-            )}
+            <div className="px-6 py-5 border-t border-zinc-100">
+              <button
+                onClick={() => endRoom(room.id, admin.secret)}
+                className="text-sm text-red-400 hover:text-red-600"
+              >
+                End session
+              </button>
+            </div>
           </div>
         </>
       )}
