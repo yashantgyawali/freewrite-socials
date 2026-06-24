@@ -129,9 +129,18 @@ export default function PhaseView({
   if (room.status === "ended") {
     return (
       <Centered>
-        <div className="text-5xl">🌱</div>
-        <p className="text-lg font-medium text-zinc-700">That&apos;s a wrap.</p>
-        <p className="text-sm text-zinc-400">Thanks for writing.</p>
+        <p className="text-base leading-relaxed text-zinc-700">
+          Thank you all for being a part of my session. This was so much fun for me. And super exciting to see all your beautiful writings.
+        </p>
+        <p className="text-base leading-relaxed text-zinc-700">
+          There&apos;s a freewrite app if you want to get started with freewriting. And it was created by Farza (one of the people I look up to quite a lot).
+        </p>
+        <p className="text-base leading-relaxed text-zinc-700">
+          Come to me, say hi and I&apos;ll share a link to the little app that lives right in your Mac.
+        </p>
+        <p className="text-base leading-relaxed text-zinc-700">
+          Hope you had a lot of fun.
+        </p>
       </Centered>
     );
   }

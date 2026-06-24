@@ -197,15 +197,23 @@ export default function WritingSurface({
     >
       <header className="px-7 pt-3 pb-2 flex items-start justify-between gap-4">
         <p className="text-sm leading-snug text-zinc-500 max-w-[80%]">{prompt}</p>
-        {deadline && (
-          <span
-            className={`shrink-0 tabular-nums text-sm font-medium ${
-              remaining <= 10 ? "text-red-600" : "text-zinc-400"
-            }`}
+        <div className="flex items-center gap-3 shrink-0">
+          {deadline && (
+            <span
+              className={`tabular-nums text-sm font-medium ${
+                remaining <= 10 ? "text-red-600" : "text-zinc-400"
+              }`}
+            >
+              {mm}:{ss}
+            </span>
+          )}
+          <button
+            onClick={finalize}
+            className="text-xs text-zinc-400 underline underline-offset-2"
           >
-            {mm}:{ss}
-          </span>
-        )}
+            I&apos;m done
+          </button>
+        </div>
       </header>
 
       {fade ? (
@@ -213,15 +221,6 @@ export default function WritingSurface({
       ) : (
         <PlainField noBackspace={noBackspace} disabled={out} onBuffer={onBuffer} />
       )}
-
-      <footer className="px-7 py-3">
-        <button
-          onClick={finalize}
-          className="text-xs text-zinc-400 underline underline-offset-2"
-        >
-          I&apos;m done
-        </button>
-      </footer>
     </div>
   );
 }
