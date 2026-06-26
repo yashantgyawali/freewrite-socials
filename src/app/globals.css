@@ -44,6 +44,46 @@ textarea {
   font-size: 16px;
 }
 
+/* Swipe deck buttons */
+.swipe-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.swipe-btn:active:not(:disabled) {
+  transform: scale(0.88) !important;
+}
+.swipe-btn:hover:not(:active):not(:disabled) {
+  transform: scale(1.1);
+}
+.swipe-btn:disabled {
+  cursor: default;
+}
+.swipe-btn-pass {
+  background: white;
+  color: #a1a1aa;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+.swipe-btn-pass:hover:not(:active):not(:disabled) {
+  box-shadow: 0 4px 18px rgba(0,0,0,0.14);
+  color: #ff3b30;
+}
+.swipe-btn-love {
+  background: #f07078;
+  color: white;
+  box-shadow: 0 4px 18px rgba(240,112,120,0.42);
+}
+.swipe-btn-love:hover:not(:active):not(:disabled) {
+  box-shadow: 0 6px 26px rgba(240,112,120,0.58);
+}
+
 .blink {
   animation: blink 1s steps(2, start) infinite;
 }

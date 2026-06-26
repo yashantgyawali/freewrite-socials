@@ -323,49 +323,27 @@ export default function SwipeDeck({
       </div>
 
       {/* Buttons */}
-      <div style={{ display: "flex", gap: 16, marginTop: 28, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 20, marginTop: 28, alignItems: "center" }}>
         <button
           aria-label="pass"
           onClick={() => doSwipe(-1)}
           disabled={busy || forced}
-          style={{
-            width: 56, height: 56,
-            borderRadius: "50%",
-            background: "white",
-            border: "none",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            color: "#8e8e93",
-            fontSize: 20,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "all 0.16s",
-            opacity: forced ? 0.3 : 1,
-          }}
+          className="swipe-btn swipe-btn-pass"
+          style={{ opacity: forced ? 0.3 : 1 }}
         >
-          ✕
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
         </button>
         <button
           aria-label="talk about this"
           onClick={() => doSwipe(1)}
           disabled={busy}
-          style={{
-            width: 68, height: 68,
-            borderRadius: "50%",
-            background: "#f07078",
-            border: "none",
-            boxShadow: "0 4px 18px rgba(240,112,120,0.38)",
-            color: "white",
-            fontSize: 26,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "all 0.16s",
-          }}
+          className="swipe-btn swipe-btn-love"
         >
-          ♥
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" />
+          </svg>
         </button>
       </div>
 
